@@ -15,14 +15,14 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState('');
-  const [totalHits, setTotalHits] = useState(0);
+  // const [totalHits, setTotalHits] = useState(0);
   const [loadMore, setLoadMore] = useState(false);
 
   const handleSearchSubmit = (newQuery) => {
     setQuery(newQuery);
     setPage(1);
     setImages([]);
-    setTotalHits(0);
+    // setTotalHits(0);
     setLoadMore(false);
   };
 
@@ -34,7 +34,7 @@ export const App = () => {
       const totalPages = Math.ceil(fetchedTotalHits / 12);
 
       setImages((prevImages) => (page === 1 ? fetchedImages : [...prevImages, ...fetchedImages]));
-      setTotalHits(fetchedTotalHits);
+      // setTotalHits(fetchedTotalHits);
       setIsLoading(false);
       if (page < totalPages) {
         setPage((prevPage) => prevPage + 1);
