@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { fetchImages } from "./Api.js";
 
 import { Button } from "./Button/Button.jsx";
@@ -26,7 +26,7 @@ export const App = () => {
     setLoadMore(false);
   };
 
-  const fetchImagesData = async () => {
+  const fetchImagesData = useCallback(async () => {
     setIsLoading(true);
 
     try {
@@ -46,13 +46,13 @@ export const App = () => {
       console.error('Error fetching images:', error);
       setIsLoading(false);
     }
-  };
+  }, [query, page]);
   
   useEffect(() => {
     if (query && page === 1) {
       fetchImagesData();
     }
-  }, [query, page]);
+  }, [query, page, fetchImagesData]);
 
   const handleImageClick = (clickedImageURL) => {
     setLargeImageURL(clickedImageURL);
