@@ -15,41 +15,35 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState('');
-  // const [totalHits, setTotalHits] = useState(0);
-  const [loadMore, setLoadMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handleSearchSubmit = (newQuery) => {
     setQuery(newQuery);
     setPage(1);
     setImages([]);
-    // setTotalHits(0);
-    setLoadMore(false);
   };
 
-  const fetchImagesData = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const { images: fetchedImages, totalHits: fetchedTotalHits } = await fetchImages(query, page);
-      const totalPages = Math.ceil(fetchedTotalHits / 12);
-
-      setImages((prevImages) => (page === 1 ? fetchedImages : [...prevImages, ...fetchedImages]));
-      // setTotalHits(fetchedTotalHits);
-      setIsLoading(false);
-      if (page < totalPages) {
-        setPage((prevPage) => prevPage + 1);
-        setLoadMore(true);
-    } else {
-        setLoadMore(false);
-    }
-    } catch (error) {
-      console.error('Error fetching images:', error);
-      setIsLoading(false);
-    }
-  }, [query, page]);
   
+    const fetchImagesData = useCallback(async () => {
+      setIsLoading(true);
+
+      try {
+        const { images: fetchedImages, totalHits: fetchedTotalHits } = await fetchImages(query, page);
+        const totalPages = Math.ceil(fetchedTotalHits / 12);
+        setTotalPages(totalPages);
+
+        setImages((prevImages) => (page === 1 ? fetchedImages : [...prevImages, ...fetchedImages]));
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+        setIsLoading(false);
+      }
+    
+
+  }, [query, page]);
+
   useEffect(() => {
-    if (query && page === 1) {
+    if (query && page >= 1) {
       fetchImagesData();
     }
   }, [query, page, fetchImagesData]);
@@ -65,7 +59,7 @@ export const App = () => {
   };
 
   const pageUpdate = () => {
-    fetchImagesData();
+    setPage((prevPage) => prevPage + 1);
   };
 
   return (
@@ -82,7 +76,7 @@ export const App = () => {
         ))}
       </ImageGallery>
       {isLoading && <Oval />}
-      {images.length > 0 && !isLoading && loadMore && (
+      {images.length > 0 && !isLoading && page < totalPages && (
         <Button onClick={pageUpdate} />
       )}
       {showModal && (
